@@ -11,7 +11,7 @@ output:
 
 # Intro
 
-COVID-19 plot. Code originally from @jbmurdoch
+COVID-19 plot. Code originally from @jburnmurdoch
 
 ## Libraries 
 
