@@ -73,7 +73,11 @@ read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_
   coord_cartesian(clip = "off") +
   scale_colour_manual(values = c("UK" = "#ce3140", "US" = "#EB5E8D", "Italy" = "black", "France" = "#c2b7af", "Germany" = "#c2b7af", "Hong Kong" = "#1E8FCC", "Iran" = "#9dbf57", "Japan" = "#208fce", "Singapore" = "#1E8FCC", "South Korea" = "#208fce", "Belgium" = "#c2b7af", "Netherlands" = "#c2b7af", "Norway" = "#c2b7af", "Spain" = "#c2b7af", "Sweden" = "#c2b7af", "Switzerland" = "#c2b7af", "33% daily rise" = "#D9CCC3", "Cruise Ship" = "#4477AA", "China" = "#6677CC")) +
   geom_shadowtext(aes(label = paste0(" ",country)), hjust=0, vjust = 0, data = . %>% group_by(country) %>% top_n(1, days_since_100), bg.color = "white") +
-  labs(x = "Number of days since 100th case", y = "", subtitle = "Total number of cases") -> plot_1
+  labs(x = "Number of days since 100th case", 
+       y = "Total number of confirmed cases",
+       title = "COVID-19 outbreak",
+       subtitle = "Countries with > 100 confirmed cases",
+       caption = "Data from 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE") -> plot_1
 
 plot_1
 ```
