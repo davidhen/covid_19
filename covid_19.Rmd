@@ -2,10 +2,16 @@
 title: "Covid-19"
 author: "David Henderson"
 date: "11/03/2020"
-output: html_document
+output: 
+  html_document:
+    theme: spacelab
+    df_print: paged
+    code_folding: hide
 ---
 
 # Intro
+
+COVID-19 plot. Code originally from @jbmurdoch
 
 ## Libraries 
 
@@ -21,6 +27,7 @@ theme_set(theme_minimal(base_size = 16,
 ```
 
 
+# Wrangle and Plot
 
 ```{r fig.width=12, fig.height=9, warning=FALSE, message=FALSE}
 read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv") %>% 
@@ -67,6 +74,8 @@ read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_
   scale_colour_manual(values = c("UK" = "#ce3140", "US" = "#EB5E8D", "Italy" = "black", "France" = "#c2b7af", "Germany" = "#c2b7af", "Hong Kong" = "#1E8FCC", "Iran" = "#9dbf57", "Japan" = "#208fce", "Singapore" = "#1E8FCC", "South Korea" = "#208fce", "Belgium" = "#c2b7af", "Netherlands" = "#c2b7af", "Norway" = "#c2b7af", "Spain" = "#c2b7af", "Sweden" = "#c2b7af", "Switzerland" = "#c2b7af", "33% daily rise" = "#D9CCC3", "Cruise Ship" = "#4477AA", "China" = "#6677CC")) +
   geom_shadowtext(aes(label = paste0(" ",country)), hjust=0, vjust = 0, data = . %>% group_by(country) %>% top_n(1, days_since_100), bg.color = "white") +
   labs(x = "Number of days since 100th case", y = "", subtitle = "Total number of cases") -> plot_1
+
+plot_1
 ```
 
 
