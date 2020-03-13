@@ -10,7 +10,7 @@ output:
 ---
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
 library(tweetrmd)
