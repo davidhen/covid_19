@@ -73,7 +73,7 @@ read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_
                                  "Spain" = "#c2b7af", "Sweden" = "#c2b7af", "Switzerland" = "#c2b7af", 
                                  "33% daily rise" = "#D9CCC3", "Cruise Ship" = "#4477AA", "China" = "#6677CC")) +
   geom_text_repel(aes(label = paste0(" ",country)), 
-                  nudge_x = 2.25, nudge_y = -0.06,
+                  nudge_y = 0.075,
                   data = . %>% group_by(country) %>% top_n(1, days_since_100)) +
   labs(x = "Number of days since 100th case", 
        y = "Total number of confirmed cases (logarithmic scale)",

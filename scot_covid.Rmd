@@ -1,0 +1,85 @@
+---
+title: "scot_covid"
+author: "David Henderson"
+date: "11/03/2020"
+output: 
+  html_document:
+    theme: spacelab
+    df_print: paged
+    code_folding: hide
+---
+
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tweetrmd)
+
+theme_set(theme_minimal(base_family = "Roboto") +
+            theme(panel.grid.minor = element_blank()))
+```
+
+
+# Plotting incidence of COVID-19 in Scotland
+
+Incredibly, the best way top get this data is by manually updating your own spreadsheet from the daily release of figures. Many thanks to Josh Magennis who has been doing this....
+
+```{r}
+tweet_screenshot(tweet_url("GintoSmfc", "1238475613238898691"))
+```
+
+From that screenshot we can make a table to use for plotting
+
+```{r}
+scot_data <- tribble(~date, ~total_tests, ~tests_negative,
+                     ymd(20200301), 698, 698,
+                     ymd(20200302), 816, 815,
+                     ymd(20200303), 915, 914,
+                     ymd(20200304), 1046, 1043,
+                     ymd(20200305), 1256, 1250,
+                     ymd(20200306), 1525, 1514,
+                     ymd(20200307), 1680, 1664,
+                     ymd(20200308), 1957, 1939,
+                     ymd(20200309), 2101, 2078,
+                     ymd(20200310), 2234, 2207,
+                     ymd(20200311), 2316, 2280,
+                     ymd(20200312), 2892, 2832,
+                     ymd(20200313), 3314, 3229) %>% 
+  mutate(new_test = total_tests - lag(total_tests), 
+         tests_positive = total_tests - tests_negative, 
+         daily_incidence = tests_positive - lag(tests_positive),
+         pct_positive = round(tests_positive/total_tests*100, 3))
+
+scot_data
+```
+
+And now plot the daily incidence
+
+
+```{r, fig.width=9, fig.height=6.75, warning=FALSE}
+scot_data %>% 
+  ggplot(aes(date, daily_incidence)) +
+  geom_col(fill = "#4477AA") +
+  geom_point(aes(date, tests_positive)) +
+  geom_path(aes(date, tests_positive), linetype = "dashed") +
+  geom_text(aes(x = ymd(20200312), y = 80, label = "Total cases"), size = 4, fontface = "bold") +
+  scale_x_date(breaks = scales::pretty_breaks(n = 12),
+               labels = scales::date_format(format = "%b-%d")) +
+  #scale_y_log10() +
+  theme(plot.margin = margin(3,15,3,3,"mm")) +
+  coord_cartesian(clip = "off") +
+  labs(title = "Reported incidence of confirmed COVID-19 cases in Scotland",
+       subtitle = "2020",
+       y = "Number of cases",
+       x = "",
+       caption = "Data derived from figures released by Scottish Government") -> plot_2
+plot_2
+  
+```
+
+
+
+```{r}
+ggsave("plot_2.png", plot_2, width = 9, height = 6, dpi = 600)
+```
+
