@@ -15,6 +15,10 @@ library(tidyverse)
 library(lubridate)
 library(tweetrmd)
 
+colours_davidhen <- c("#e53935", "#3949ab", "#8e24aa", "#039be5",
+                      "#00897b", "#7cb342", "#fdd835", "#fb8c00",
+                      "#6d4c41", "#546e7a")
+
 theme_set(theme_minimal(base_family = "Roboto") +
             theme(panel.grid.minor = element_blank()))
 ```
@@ -44,7 +48,8 @@ scot_data <- tribble(~date, ~total_tests, ~tests_negative,
                      ymd(20200310), 2234, 2207,
                      ymd(20200311), 2316, 2280,
                      ymd(20200312), 2892, 2832,
-                     ymd(20200313), 3314, 3229) %>% 
+                     ymd(20200313), 3314, 3229,
+                     ymd(20200314), 3715, 3594) %>% 
   mutate(new_test = total_tests - lag(total_tests), 
          tests_positive = total_tests - tests_negative, 
          daily_incidence = tests_positive - lag(tests_positive),
@@ -59,10 +64,10 @@ And now plot the daily incidence
 ```{r, fig.width=9, fig.height=6.75, warning=FALSE}
 scot_data %>% 
   ggplot(aes(date, daily_incidence)) +
-  geom_col(fill = "#4477AA") +
+  geom_col(fill = "#3949ab") +
   geom_point(aes(date, tests_positive)) +
   geom_path(aes(date, tests_positive), linetype = "dashed") +
-  geom_text(aes(x = ymd(20200312), y = 80, label = "Total cases"), size = 4, fontface = "bold") +
+  geom_text(aes(x = ymd(20200313), y = 120, label = "Total cases"), size = 4, fontface = "bold") +
   scale_x_date(breaks = scales::pretty_breaks(n = 12),
                labels = scales::date_format(format = "%b-%d")) +
   #scale_y_log10() +
@@ -82,4 +87,50 @@ plot_2
 ```{r}
 ggsave("plot_2.png", plot_2, width = 9, height = 6, dpi = 600)
 ```
+
+
+#UK cases
+
+Data from https://www.arcgis.com/home/item.html?id=e5fd11150d274bebaaf8fe2a7a2bda11. Annoyingly, the "download" button doesn't have a seperate address so need to download manually and import that way. Also in .xlsx format. .csv would be preferable....
+
+
+```{r}
+uk_data <- readxl::read_excel("raw_data/uk_confirmed_cases_dept_h_sc.xlsx") %>% 
+  mutate(date = ymd(DateVal)) %>% 
+  rename(new_cases = CMODateCount,
+         cum_cases = CumCases) %>% 
+  select(date, everything(), -DateVal)
+uk_data
+```
+
+```{r, fig.width=9, fig.height=6.75, warning=FALSE}
+uk_data %>% 
+  ggplot(aes(date, new_cases)) +
+  geom_col(fill = "#3949ab") +
+  geom_point(aes(date, cum_cases)) +
+  geom_path(aes(date, cum_cases), linetype = "dashed") +
+  geom_text(aes(x = max(date) - days(3),
+                y = max(cum_cases) - 10),
+            label = "Cumulative total",
+            size = 4, fontface = "bold") +
+  scale_x_date(breaks = scales::pretty_breaks(n = length(uk_data$date)/2),
+               labels = scales::date_format(format = "%b-%d"),
+               guide = guide_axis(n.dodge = 2)) +
+  scale_y_log10() +
+  theme(plot.margin = margin(3,15,3,3,"mm")) +
+  coord_cartesian(clip = "off") +
+  labs(title = "Reported incidence of confirmed COVID-19 cases in UK",
+       subtitle = "2020",
+       y = "Number of cases\n(log scale)",
+       x = "",
+       caption = "Data from Dept of Health and Social Care\n@_davidhen") -> plot_3
+plot_3
+  
+```
+
+
+```{r}
+ggsave("plot_3.png", plot_3, width = 12, height = 9, dpi = 600)
+```
+
 
